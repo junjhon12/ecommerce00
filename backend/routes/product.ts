@@ -1,5 +1,4 @@
 import express, { Request, Response } from 'express';
-// Assuming a configured database pool or ORM instance is imported here as `db`
 import { authenticateToken, requireRole } from '../middleware/auth';
 
 const router = express.Router();
@@ -19,12 +18,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-/* 
-  feat: implement Create operation for administrative inventory
-  Extracting specific fields via object destructuring in the request body was chosen 
-  to prevent injection of unwanted columns, balancing security optimization with clean code.
-*/
-router.post('/', async (req: Request, res: Response): Promise<void> => {
+router.post('/', authenticateToken, requireRole('ADMIN'), async (req: Request, res: Response): Promise<void> => {
     try {
         const { name, price, stock_quantity } = req.body;
         // Example DB call: INSERT INTO products (name, price, stock_quantity) VALUES (...)
@@ -33,9 +27,6 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ error: "Failed to create product" });
     }
 });
-
-// Only ADMIN roles can create products
-router.post('/', authenticateToken, requireRole('ADMIN'), async (req: Request, res: Response): Promise<void> => { ... });
 
 /* 
   feat: implement Update operation for existing products

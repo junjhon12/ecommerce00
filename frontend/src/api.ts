@@ -6,6 +6,20 @@ export interface CheckoutSessionResponse {
 }
 
 /* 
+  feat: implement strictly typed API fetch service
+  Using the native Fetch API with explicit return types was chosen over heavy libraries 
+  like Axios to reduce the frontend bundle size, optimizing page load speeds while 
+  maintaining readable, dependency-free code.
+*/
+export const fetchProducts = async (): Promise<Product[]> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch products');
+    }
+    return response.json();
+};
+
+/* 
   feat: implement stripe checkout session request
   Delegating the checkout redirection URL generation to the backend was chosen over 
   client-side Stripe integration to optimize security by keeping API keys hidden, 
