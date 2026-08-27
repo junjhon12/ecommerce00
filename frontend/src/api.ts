@@ -65,6 +65,10 @@ export const createProduct = async (productData: Omit<Product, 'id'>): Promise<v
     }
 };
 
+export interface AuthResponse {
+    token: string;
+}
+
 /* 
   feat: implement strictly typed login request
   Delegating credential validation to a dedicated API utility was chosen over inline 
