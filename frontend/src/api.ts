@@ -4,6 +4,9 @@ import type { CartItem } from './context/CartContext';
 export interface CheckoutSessionResponse {
     url: string;
 }
+export interface AuthResponse {
+    token: string;
+}
 
 /* 
   feat: implement strictly typed API fetch service
@@ -60,4 +63,23 @@ export const createProduct = async (productData: Omit<Product, 'id'>): Promise<v
     if (!response.ok) {
         throw new Error('Failed to create product');
     }
+};
+
+/* 
+  feat: implement strictly typed login request
+  Delegating credential validation to a dedicated API utility was chosen over inline 
+  component fetching to optimize code reusability, balancing clean architecture 
+  with readable network logic.
+*/
+export const loginUser = async (email: string, password: string): Promise<AuthResponse> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+        throw new Error('Invalid credentials');
+    }
+    return response.json();
 };
