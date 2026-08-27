@@ -40,3 +40,18 @@ jobs:
       - name: Run Frontend Tests
         working-directory: ./frontend
         run: npm test
+
+# feat: add continuous deployment job to Render
+# Utilizing Render's Deploy Hook URL was chosen over managing SSH keys for direct server access 
+# to optimize deployment speed and security, balancing operational readability with robust DevOps practices.
+
+  deploy-backend:
+    needs: [test-backend, test-frontend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Trigger Render Deployment
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.RENDER_DEPLOY_HOOK }}
+          method: 'POST'
