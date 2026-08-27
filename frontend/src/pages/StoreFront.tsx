@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { fetchProducts, createCheckoutSession } from '../api';
 import type { Product } from '../types';
 import { useCart } from '../context/CartContext';
@@ -7,6 +7,10 @@ export default function StoreFront() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { cart, addToCart, cartTotal } = useCart();
+
+  // Filter States
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [maxPrice, setMaxPrice] = useState<number | ''>('');
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -23,11 +27,19 @@ export default function StoreFront() {
   }, []);
 
   /* 
-    feat: handle stripe checkout redirection
-    Using window.location.href for external routing was chosen over React Router to 
-    optimize the handoff to Stripe's hosted PCI-compliant payment page, balancing 
-    security compliance with straightforward navigation logic.
+    feat: implement product catalog filtering
+    The useMemo hook was chosen here to compute the filtered product list over inline filtering 
+    to optimize rendering performance. It ensures the array is only recalculated when the underlying 
+    catalog or filter parameters mutate, balancing UI responsiveness with highly readable derived state.
   */
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesPrice = maxPrice === '' || product.price <= Number(maxPrice);
+      return matchesSearch && matchesPrice;
+    });
+  }, [products, searchTerm, maxPrice]);
+
   const handleCheckout = async () => {
     if (cart.length === 0) return;
     try {
@@ -49,18 +61,39 @@ export default function StoreFront() {
             </button>
         </nav>
       </header>
+
+      <section className="filters">
+        <input 
+            type="text" 
+            placeholder="Search products..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <input 
+            type="number" 
+            placeholder="Max Price" 
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value === '' ? '' : Number(e.target.value))}
+            min="0"
+            step="0.01"
+        />
+      </section>
       
       {loading ? (
         <p>Loading catalog...</p>
       ) : (
         <section className="product-grid">
-          {products.map((product) => (
-            <article key={product.id}>
-              <h2>{product.name}</h2>
-              <p>${product.price.toFixed(2)}</p>
-              <button onClick={() => addToCart(product)}>Add to Cart</button>
-            </article>
-          ))}
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <article key={product.id}>
+                <h2>{product.name}</h2>
+                <p>${product.price.toFixed(2)}</p>
+                <button onClick={() => addToCart(product)}>Add to Cart</button>
+              </article>
+            ))
+          ) : (
+            <p>No products match your filters.</p>
+          )}
         </section>
       )}
     </main>
