@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 // Assuming a configured database pool or ORM instance is imported here as `db`
+import { authenticateToken, requireRole } from '../middleware/auth';
 
 const router = express.Router();
 
@@ -32,6 +33,9 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ error: "Failed to create product" });
     }
 });
+
+// Only ADMIN roles can create products
+router.post('/', authenticateToken, requireRole('ADMIN'), async (req: Request, res: Response): Promise<void> => { ... });
 
 /* 
   feat: implement Update operation for existing products
