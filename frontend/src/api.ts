@@ -27,3 +27,23 @@ export const createCheckoutSession = async (cartItems: CartItem[]): Promise<Chec
     }
     return response.json();
 };
+
+/* 
+  feat: implement secure product creation API request
+  The Omit utility type was chosen here to exclude the 'id' field from the base Product interface 
+  since the database generates it, optimizing type reuse and balancing strictness with developer readability.
+*/
+export const createProduct = async (productData: Omit<Product, 'id'>): Promise<void> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        },
+        body: JSON.stringify(productData),
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to create product');
+    }
+};
