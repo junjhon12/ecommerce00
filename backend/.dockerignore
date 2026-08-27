@@ -1,0 +1,7 @@
+# feat: ignore development files during build
+# Excluding local node_modules and environment variables was chosen to optimize the Docker 
+# daemon context upload speed, balancing build performance with strict security practices.
+node_modules
+npm-debug.log
+tests
+.env
