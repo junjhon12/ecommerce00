@@ -1,10 +1,11 @@
-import { createContext, useContext, useState, useMemo, ReactNode } from 'react';
+import { createContext, useContext, useState, useMemo } from 'react';
+import type { ReactNode } from 'react';
 import type { Product } from '../types';
 
 // Strictly type the cart item by extending the base Product interface
-export interface CartItem extends Product {
+export type CartItem = Product & {
     quantity: number;
-}
+};
 
 interface CartContextType {
     cart: CartItem[];
@@ -57,6 +58,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCart = (): CartContextType => {
     const context = useContext(CartContext);
     if (!context) {

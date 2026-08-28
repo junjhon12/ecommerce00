@@ -1,8 +1,8 @@
-import express, { Application } from 'express';
-import productRoutes from './routes/products';
+import express from 'express';
+import type { Application } from 'express';
+import productRoutes from './routes/product.js';
 
 const app: Application = express();
-
 app.use(express.json());
 
 /* 
