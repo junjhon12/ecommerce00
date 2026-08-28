@@ -35,7 +35,6 @@ export default function Dashboard() {
     e.preventDefault();
     try {
         await createProduct({ name, price, stock_quantity: stockQuantity });
-        // Reset form and reload table
         setName('');
         setPrice(0);
         setStockQuantity(0);
@@ -46,74 +45,95 @@ export default function Dashboard() {
   };
 
   return (
-    <main>
-      <header>
-        <h1>Admin Dashboard</h1>
-        <nav>Inventory Management</nav>
+    <main className="min-h-screen bg-gray-50 p-6 md:p-12 font-sans">
+      <header className="mb-8 bg-white p-6 shadow-sm rounded-xl border border-gray-100 flex justify-between items-center">
+        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Admin Dashboard</h1>
+        <span className="bg-indigo-100 text-indigo-800 text-sm font-semibold px-4 py-1.5 rounded-full">Inventory Management</span>
       </header>
       
-      <section className="admin-controls">
-        <h2>Add New Product</h2>
-        <form onSubmit={handleAddProduct}>
-            <input 
-                type="text" 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-                placeholder="Product Name" 
-                required 
-            />
-            <input 
-                type="number" 
-                value={price} 
-                onChange={(e) => setPrice(Number(e.target.value))} 
-                placeholder="Price" 
-                step="0.01"
-                required 
-            />
-            <input 
-                type="number" 
-                value={stockQuantity} 
-                onChange={(e) => setStockQuantity(Number(e.target.value))} 
-                placeholder="Stock Quantity" 
-                required 
-            />
-            <button type="submit">Create Product</button>
-        </form>
-      </section>
-
-      {loading ? (
-        <p>Loading inventory...</p>
-      ) : (
-        <section className="inventory-list">
-          <h2>Current Catalog</h2>
-          <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                </tr>
-            </thead>
-            <tbody>
-                {products.map(product => (
-                    <tr key={product.id}>
-                        <td>{product.id.slice(0, 8)}...</td>
-                        <td>{product.name}</td>
-                        <td>${product.price.toFixed(2)}</td>
-                        <td>{product.stock_quantity}</td>
-                    </tr>
-                ))}
-            </tbody>
-          </table>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <section className="bg-white p-6 shadow-sm rounded-xl border border-gray-100 lg:col-span-1 h-fit">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Add New Product</h2>
+          <form onSubmit={handleAddProduct} className="flex flex-col gap-4">
+              <input 
+                  type="text" 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                  placeholder="Product Name" 
+                  required 
+                  className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <input 
+                  type="number" 
+                  value={price} 
+                  onChange={(e) => setPrice(Number(e.target.value))} 
+                  placeholder="Price" 
+                  step="0.01"
+                  required 
+                  className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <input 
+                  type="number" 
+                  value={stockQuantity} 
+                  onChange={(e) => setStockQuantity(Number(e.target.value))} 
+                  placeholder="Stock Quantity" 
+                  required 
+                  className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <button 
+                  type="submit"
+                  className="bg-indigo-600 text-white font-semibold py-2.5 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm mt-2"
+              >
+                  Create Product
+              </button>
+          </form>
         </section>
-      )}
+
+        {/* 
+          feat: implement administrative inventory table
+          A native HTML table structure styled with Tailwind CSS was chosen over a CSS grid for 
+          tabular data to optimize screen reader accessibility, balancing semantic correctness 
+          with readable styling logic[cite: 16].
+        */}
+        <section className="bg-white shadow-sm rounded-xl border border-gray-100 lg:col-span-2 overflow-hidden">
+          <div className="p-6 border-b border-gray-100">
+            <h2 className="text-xl font-bold text-gray-800">Current Catalog</h2>
+          </div>
+          
+          {loading ? (
+            <div className="flex justify-center items-center h-48">
+                <p className="text-gray-500 animate-pulse font-medium">Loading inventory...</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
+                        <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
+                        <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
+                        <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Stock</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                    {products.map(product => (
+                        <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                            <td className="px-6 py-4 text-sm text-gray-500 font-mono">{product.id.slice(0, 8)}...</td>
+                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{product.name}</td>
+                            <td className="px-6 py-4 text-sm text-gray-700">${product.price.toFixed(2)}</td>
+                            <td className="px-6 py-4 text-sm text-gray-700">
+                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${product.stock_quantity > 10 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                    {product.stock_quantity} in stock
+                                </span>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </div>
     </main>
   );
 }
-
-{/* 
-  feat: Dashboard component 
-  A functional component was chosen here over a class component to optimize rendering 
-  and easily integrate React hooks, balancing readability and performance.
-*/}
