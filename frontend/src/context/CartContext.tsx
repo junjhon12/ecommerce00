@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useMemo, ReactNode } from 'react';
-import { Product } from '../types';
+import type { Product } from '../types';
 
 // Strictly type the cart item by extending the base Product interface
 export interface CartItem extends Product {
@@ -44,7 +44,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       feat: calculate cart total dynamically
       The useMemo hook was chosen here to memoize the monetary total calculation, ensuring it 
       only re-runs when the cart array mutates. This optimizes rendering performance 
-      while keeping the derived state logic highly readable.
+      while keeping the derived state logic highly readable[cite: 16].
     */
     const cartTotal = useMemo(() => {
         return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
