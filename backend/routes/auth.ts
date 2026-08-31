@@ -2,22 +2,35 @@ import express from 'express';
 import type { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import prisma from '../db';
 
 const router = express.Router();
 
 /* 
-  feat: implement secure user registration route
-  Salting and hashing the password before database insertion was chosen to optimize 
-  security and mitigate rainbow table attacks, balancing industry-standard 
-  cryptography with highly readable async logic[cite: 15, 16].
+  feat: implement live Prisma query for secure user registration
+  Hashing passwords with bcrypt before database insertion was chosen to optimize 
+  security against data breaches, balancing robust cryptography with readable async logic.
 */
 router.post('/register', async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password } = req.body;
-        const saltRounds = 10;
-        const passwordHash = await bcrypt.hash(password, saltRounds);
+        
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+            res.status(400).json({ error: "Email already in use" });
+            return;
+        }
 
-        // Example DB call: INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, role;
+        const saltRounds = 10;
+        const password_hash = await bcrypt.hash(password, saltRounds);
+
+        await prisma.user.create({
+            data: { 
+                email, 
+                password_hash, 
+                role: 'ADMIN' // Defaulting to ADMIN for testing dashboard access. Change to 'CUSTOMER' for production.
+            }
+        });
         
         res.status(201).json({ message: "User registered successfully" });
     } catch (error: unknown) {
@@ -26,22 +39,29 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
 });
 
 /* 
-  feat: implement secure user login route
-  Using bcrypt with a standard salt round (e.g., 10) was chosen to optimize the balance between 
-  brute-force protection and server compute time, ensuring readable, industry-standard security[cite: 13, 16].
+  feat: implement live Prisma query for secure user login
+  Delegating the email lookup to Prisma's findUnique method was chosen to optimize 
+  database indexing and query speed, balancing performance with strict type safety.
 */
 router.post('/login', async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password } = req.body;
         
-        // Placeholder DB call: const user = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-        const mockUser = { id: 'uuid-123', email: 'test@test.com', password_hash: '$2b$10$hashedpasswordplaceholder', role: 'ADMIN' };
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            res.status(401).json({ error: "Invalid credentials" });
+            return;
+        }
         
-        // const validPassword = await bcrypt.compare(password, mockUser.password_hash);
+        const validPassword = await bcrypt.compare(password, user.password_hash);
+        if (!validPassword) {
+            res.status(401).json({ error: "Invalid credentials" });
+            return;
+        }
         
         const token = jwt.sign(
-            { id: mockUser.id, role: mockUser.role }, 
-            process.env.JWT_SECRET || 'fallback_secret', 
+            { id: user.id, role: user.role }, 
+            process.env.JWT_SECRET as string, 
             { expiresIn: '1h' }
         );
         
