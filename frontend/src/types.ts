@@ -9,3 +9,21 @@ export interface Product {
     price: number;
     stock_quantity: number;
 }
+
+export interface OrderItem {
+    id: string;
+    product_id: string;
+    quantity: number;
+    price_at_time: number;
+    product?: Product;
+}
+
+export interface Order {
+    id: string;
+    user_id: string;
+    status: string;
+    total_amount: number;
+    created_at: string;
+    user?: { email: string };
+    order_items: OrderItem[];
+}

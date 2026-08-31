@@ -134,3 +134,21 @@ export const createOrder = async (orderPayload: OrderPayload): Promise<void> => 
         throw new Error('Failed to create order record');
     }
 };
+
+/* 
+  feat: implement strictly typed API request for administrative order tracking
+  Including the JWT token in the Authorization header ensures the RBAC middleware 
+  authenticates the request before querying the database, balancing security with frontend data access.
+*/
+export const fetchOrders = async (): Promise<Order[]> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`, {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch orders');
+    }
+    return response.json();
+};
