@@ -83,3 +83,35 @@ export const loginUser = async (email: string, password: string): Promise<AuthRe
     }
     return response.json();
 };
+
+export interface OrderItemInput {
+    product_id: string;
+    quantity: number;
+    price_at_time: number;
+}
+
+export interface OrderPayload {
+    items: OrderItemInput[];
+    total_amount: number;
+}
+
+/* 
+  feat: implement secure order creation API request
+  Posting the order to the database before initializing the Stripe session ensures 
+  the transaction intent is securely captured, balancing strict data tracking with 
+  a seamless checkout flow.
+*/
+export const createOrder = async (orderPayload: OrderPayload): Promise<void> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        },
+        body: JSON.stringify(orderPayload),
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to create order record');
+    }
+};

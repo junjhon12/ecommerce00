@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { fetchProducts, createCheckoutSession } from '../api';
+import { fetchProducts, createCheckoutSession, createOrder } from '../api';
 import type { Product } from '../types';
 import { useCart } from '../context/CartContext';
 
@@ -43,6 +43,18 @@ export default function StoreFront() {
   const handleCheckout = async () => {
     if (cart.length === 0) return;
     try {
+        // 1. Create the order record in the PostgreSQL database
+        const orderPayload = {
+            items: cart.map(item => ({
+                product_id: item.id,
+                quantity: item.quantity,
+                price_at_time: item.price
+            })),
+            total_amount: cartTotal
+        };
+        await createOrder(orderPayload);
+
+        // 2. Initialize and redirect to the Stripe checkout session
         const { url } = await createCheckoutSession(cart);
         window.location.href = url;
     } catch (error: unknown) {
