@@ -152,3 +152,20 @@ export const fetchOrders = async (): Promise<Order[]> => {
     }
     return response.json();
 };
+
+export interface ChatResponse {
+    reply: string;
+}
+
+export const fetchRecommendation = async (query: string): Promise<ChatResponse> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/chat/recommend`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query }),
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch AI response');
+    }
+    return response.json();
+};

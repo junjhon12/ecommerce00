@@ -1,6 +1,7 @@
 import express from 'express';
 import type { Application } from 'express';
 import productRoutes from './routes/product.js';
+import chatRoutes from './routes/chat';
 
 const app: Application = express();
 app.use(express.json());
@@ -11,6 +12,7 @@ app.use(express.json());
   prevent merge conflicts and optimize route parsing, balancing structure with readability.
 */
 app.use('/api/products', productRoutes);
+app.use('/api/chat', chatRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
