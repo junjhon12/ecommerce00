@@ -24,6 +24,25 @@ export const fetchProducts = async (): Promise<Product[]> => {
 };
 
 /* 
+  feat: implement strictly typed registration request
+  Delegating the registration network call to the API service was chosen over inline 
+  component fetching to optimize code reusability and separation of concerns, balancing 
+  clean architecture with readable network logic.
+*/
+export const registerUser = async (email: string, password: string): Promise<void> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || 'Registration failed');
+    }
+};
+
+/* 
   feat: implement stripe checkout session request
   Delegating the checkout redirection URL generation to the backend was chosen over 
   client-side Stripe integration to optimize security by keeping API keys hidden, 
