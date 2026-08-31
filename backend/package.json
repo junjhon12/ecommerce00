@@ -4,28 +4,38 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate",
+    "contract:emit": "prisma contract emit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@prisma/orm-postgres": "^8.0.0-rc.8",
     "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.23.0",
-    "prisma": "^8.0.0-rc.12",
     "stripe": "^22.6.0"
   },
   "devDependencies": {
+    "@prisma/cli-engine": "^0.2.3",
+    "@prisma/client": "^6.19.3",
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.4.0",
     "@types/supertest": "^7.2.1",
+    "and": "^0.0.3",
+    "install": "^0.13.0",
     "jest": "^30.4.2",
+    "npm": "^12.0.2",
+    "prisma": "^6.19.3",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.12"
   }
