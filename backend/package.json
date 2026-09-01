@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "db:push": "prisma db push",
-    "db:generate": "prisma generate",
-    "contract:emit": "prisma contract emit"
+    "db:generate": "prisma generate"
   },
   "keywords": [],
   "author": "",
