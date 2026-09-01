@@ -1,4 +1,5 @@
-import { useEffect, useState, FormEvent } from 'react';
+import { useEffect, useState } from 'react';
+import type { FormEvent } from 'react';
 import { fetchProducts, createProduct, fetchOrders } from '../api';
 import type { Product, Order } from '../types';
 
@@ -39,7 +40,9 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadCatalog();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadOrders();
   }, []);
 

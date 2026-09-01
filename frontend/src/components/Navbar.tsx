@@ -32,7 +32,7 @@ export default function Navbar() {
                         Catalog
                     </Link>
                     
-                    <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200 hidden sm:flex">
+                    <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200 sm:flex">
                         <span className="text-sm font-semibold text-gray-800">Cart ({cartItemCount})</span>
                         <span className="text-sm font-bold text-green-600">${cartTotal.toFixed(2)}</span>
                     </div>

@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { fetchRecommendation } from '../api';
 
 export default function Chatbot() {
@@ -18,11 +19,8 @@ export default function Chatbot() {
         try {
             const data = await fetchRecommendation(query);
             setResponse(data.reply);
-        } catch (error: unknown) {
+        } catch {
             setResponse("Sorry, I am having trouble connecting to the AI.");
-        } finally {
-            setLoading(false);
-            setQuery('');
         }
     };
 

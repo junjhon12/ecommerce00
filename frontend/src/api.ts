@@ -1,4 +1,4 @@
-import type { Product } from './types';
+import type { Product, Order } from './types';
 import type { CartItem } from './context/CartContext';
 
 export interface CheckoutSessionResponse {
