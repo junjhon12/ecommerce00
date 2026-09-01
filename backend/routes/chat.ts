@@ -29,7 +29,7 @@ router.post('/recommend', async (req: Request, res: Response): Promise<void> => 
             model: 'deepseek-chat', // Updated to DeepSeek's model identifier
         });
 
-        res.status(200).json({ reply: completion.choices[0].message.content });
+        res.status(200).json({ reply: completion.choices[0]?.message?.content || "Sorry, I couldn't generate a recommendation right now." });
     } catch (error: unknown) {
         res.status(500).json({ error: "Failed to generate AI recommendation" });
     }
