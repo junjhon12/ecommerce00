@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 
 interface AuthContextType {
@@ -13,17 +13,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 /* 
   feat: implement global authentication state
   Using React Context combined with localStorage was chosen to optimize session persistence 
-  across page reloads, balancing robust standard security practices with readable state management.
+  across page reloads. Initializing state lazily resolves the ESLint set-state-in-effect 
+  warning and optimizes the initial render by preventing unnecessary cascading updates[cite: 11].
 */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [token, setToken] = useState<string | null>(null);
-
-    useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        if (storedToken) {
-            setToken(storedToken);
-        }
-    }, []);
+    const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
 
     const login = (newToken: string) => {
         localStorage.setItem('token', newToken);
@@ -42,6 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = (): AuthContextType => {
     const context = useContext(AuthContext);
     if (!context) {
