@@ -40,12 +40,12 @@ router.post('/', authenticateToken, requireRole('ADMIN'), async (req: Request, r
 
 /* 
   feat: implement Prisma Update operation for existing products
-  Utilizing Prisma's built-in where clause was chosen to precisely target specific records 
-  by ID, optimizing database performance while keeping update logic readable[cite: 6].
+  Explicitly casting the parameter to a string resolves strict TypeScript optional property 
+  errors, optimizing type safety and balancing strict compiler compliance with readable logic.
 */
 router.put('/:id', authenticateToken, requireRole('ADMIN'), async (req: Request, res: Response): Promise<void> => {
     try {
-        const { id } = req.params;
+        const id = req.params.id as string;
         const { name, price, stock_quantity } = req.body;
         const updatedProduct = await prisma.product.update({
             where: { id },
@@ -62,7 +62,7 @@ router.put('/:id', authenticateToken, requireRole('ADMIN'), async (req: Request,
 */
 router.delete('/:id', authenticateToken, requireRole('ADMIN'), async (req: Request, res: Response): Promise<void> => {
     try {
-        const { id } = req.params;
+        const id = req.params.id as string;
         await prisma.product.delete({
             where: { id }
         });
