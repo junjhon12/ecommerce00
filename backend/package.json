@@ -20,11 +20,11 @@
     "jsonwebtoken": "^9.0.3",
     "openai": "^7.8.0",
     "pg": "^8.23.0",
-    "stripe": "^22.6.0"
+    "stripe": "^22.6.0",
+    "@prisma/client": "^6.19.3",
   },
   "devDependencies": {
     "@prisma/cli-engine": "^0.2.3",
-    "@prisma/client": "^6.19.3",
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
